@@ -1,9 +1,8 @@
 package com.spookynebula.battleshipgame.test;
 
-import com.spookynebula.battleshipgame.Core.CursorSystem;
 import com.spookynebula.battleshipgame.Core.DebugSystem;
 import com.spookynebula.battleshipgame.Core.DefaultRenderSystem;
-import com.spookynebula.battleshipgame.Core.PhysicsSystem;
+import com.spookynebula.battleshipgame.Core.DefaultPhysicsSystem;
 import com.spookynebula.battleshipgame.Core.components.DrawableComponent;
 import com.spookynebula.battleshipgame.Core.components.PhysicsComponent;
 import com.spookynebula.battleshipgame.Core.components.PositionComponent;
@@ -85,9 +84,9 @@ public class ECSTest extends GameContainer {
         InputController.subscribe(debugSystem);
         systems.add(debugSystem);
 
-        PhysicsSystem physicsSystem = new PhysicsSystem(this);
-        EntityManager.subscribe(physicsSystem);
-        systems.add(physicsSystem);
+        DefaultPhysicsSystem defaultPhysicsSystem = new DefaultPhysicsSystem(this);
+        EntityManager.subscribe(defaultPhysicsSystem);
+        systems.add(defaultPhysicsSystem);
 
         // Test loading images
         ContentLoader.loadImage("/com/spookynebula/battleshipgame/assets/test.png");

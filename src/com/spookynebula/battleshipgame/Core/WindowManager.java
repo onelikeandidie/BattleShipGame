@@ -73,11 +73,16 @@ public class WindowManager implements ISubscribeSystem{
         BLANK_CURSOR = tempCursor;
     }
 
+    // Draw the frame
     public void drawWindow(){
         graphics.drawImage(frameImage, 0, 0, canvas.getWidth(), canvas.getHeight(), null);
         bufferStrategy.show();
     }
 
+    /**
+     * Updates the dimensions of the frame.
+     * Calculates new dimensions automatically.
+     */
     public void updateWindowSize(){
         // Dispose of the current frame
         frameImage.flush();
@@ -98,6 +103,9 @@ public class WindowManager implements ISubscribeSystem{
         notifySubscriber(new WindowResizeEvent(frame, frameImage, canvas, bufferStrategy, graphics, windowWidth, windowHeight, windowScale));
     }
 
+    /**
+     * Updates the title of the Window
+     */
     public void updateTitle(){
         frame.setTitle(windowTitle);
     }
@@ -118,10 +126,16 @@ public class WindowManager implements ISubscribeSystem{
 
     public void setFrameImage(BufferedImage newFrameImage) { frameImage = newFrameImage; }
 
+    /**
+     * Hides system cursor
+     */
     public void cursorHide(){
         frame.getContentPane().setCursor(BLANK_CURSOR);
     }
 
+    /**
+     * Shows system cursor
+     */
     public void cursorShow(){
         frame.setCursor(Cursor.getDefaultCursor());
     }
@@ -146,6 +160,9 @@ public class WindowManager implements ISubscribeSystem{
 
     public void enable() { enabled = true; }
 
+    /**
+     * This event is created whenever the window is resized programmatically
+     */
     public class WindowResizeEvent {
         private final JFrame frame;
         private final BufferedImage frameImage;

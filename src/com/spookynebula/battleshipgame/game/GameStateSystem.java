@@ -16,6 +16,7 @@ public class GameStateSystem implements IInitSystem, ISubscriber {
     private GameContainer parentGame;
     private boolean enabled;
 
+    // Keep track of the Entities for the game
     private Entity playerFleetBoard;
     private Entity playerGuessBoard;
     private Entity cpuFleetBoard;
@@ -25,6 +26,7 @@ public class GameStateSystem implements IInitSystem, ISubscriber {
 
     private List<IEntity> boatEntityList;
 
+    // Keep track of the state of the game as well as the AI
     private GameState gameState;
     private AmazingCPU AI;
 
@@ -43,6 +45,9 @@ public class GameStateSystem implements IInitSystem, ISubscriber {
         boatEntityList = new ArrayList<IEntity>();
     }
 
+    /**
+     * Creates all the necessary entities and the AI
+     */
     public void Init() {
         modalImage = parentGame.getContentLoader().getTexture(2);
         windowWidth = parentGame.getWindowManager().getWindowWidth();
@@ -76,6 +81,9 @@ public class GameStateSystem implements IInitSystem, ISubscriber {
         AI = new AmazingCPU(parentGame, cpuFleetBoard, cpuGuessBoard);
     }
 
+    /**
+     * Creates Tutorial modals
+     */
     private void displayTutorial() {
         createModalEntity("Welcome to Naval Battle!");
         createModalEntity("The board on the left is your fleet board");
@@ -91,6 +99,9 @@ public class GameStateSystem implements IInitSystem, ISubscriber {
         createModalEntity("Good Luck!");
     }
 
+    /**
+     * Creates the boats for the user to place
+     */
     private void createBoats() {
         createBoatEntity(2, 1);
         createBoatEntity(2, 1);
@@ -100,6 +111,12 @@ public class GameStateSystem implements IInitSystem, ISubscriber {
         createBoatEntity(4, 1);
     }
 
+    /**
+     * Creates the cute tiny LCD-make-believe display
+     * @param x X position
+     * @param y Y position
+     * @return the created entity
+     */
     private Entity createTextDisplay(int x, int y) {
         // Create the test Entity and add it to the EntityManager
         Entity textDisplayEntity = new Entity();
@@ -119,6 +136,12 @@ public class GameStateSystem implements IInitSystem, ISubscriber {
         return textDisplayEntity;
     }
 
+    /**
+     * Creates Boat Entities
+     * @param boatSizeX vertical boat size
+     * @param boatSizeY horizontal boat size
+     * @return the created entity
+     */
     private Entity createBoatEntity(int boatSizeX, int boatSizeY) {
         // Create the test Entity and add it to the EntityManager
         Entity boatEntity = new Entity();
@@ -133,10 +156,24 @@ public class GameStateSystem implements IInitSystem, ISubscriber {
         return boatEntity;
     }
 
+    /**
+     * Creates the boards
+     * @param playerID played index
+     * @param isHidden Decides if the board is supposed to be drawn
+     * @return the Board Entity
+     */
     private Entity createBoardEntity(int playerID, boolean isHidden) {
         return createBoardEntity(playerID, isHidden, 0, 0);
     }
 
+    /**
+     * Creates the board entity
+     * @param playerID player index
+     * @param isHidden Decides if the board is supposed to be drawn
+     * @param x X position
+     * @param y Y position
+     * @return the Board Entity
+     */
     private Entity createBoardEntity(int playerID, boolean isHidden, int x, int y) {
         Entity boardEntity = new Entity();
         parentGame.getEntityManager().addEntity(boardEntity);
@@ -153,6 +190,11 @@ public class GameStateSystem implements IInitSystem, ISubscriber {
         return boardEntity;
     }
 
+    /**
+     * Creates a Modal Entity
+     * @param modalText the Text to be displayed
+     * @return the Modal Entity created
+     */
     private Entity createModalEntity(String modalText) {
         // Create the test Entity and add it to the EntityManager
         Entity modalEntity = new Entity();
@@ -170,6 +212,16 @@ public class GameStateSystem implements IInitSystem, ISubscriber {
         return modalEntity;
     }
 
+    /**
+     * Creates a button entity
+     * @param spriteSheetID the sprite index
+     * @param tileX the sprite X position
+     * @param tileY the sprite Y position
+     * @param x X position
+     * @param y Y position
+     * @param cursors Cursor on hover
+     * @return the Button Entity created
+     */
     private Entity createButtonEntity(
             int spriteSheetID,
             int[] tileX, int[] tileY,
@@ -196,6 +248,10 @@ public class GameStateSystem implements IInitSystem, ISubscriber {
         return buttonEntity;
     }
 
+    /**
+     * Sets the LCD-make-believe display's text
+     * @param newText the new Text
+     */
     private void setTextDisplayText(String newText) {
         TextDisplayComponent textDisplayComponent =
                 (TextDisplayComponent) parentGame.ComponentRegister.get(textDisplay, "text_display_component");
@@ -203,6 +259,11 @@ public class GameStateSystem implements IInitSystem, ISubscriber {
         textDisplayComponent.recalculateText();
     }
 
+    /**
+     * Sets the clickability of one of the 2 buttons
+     * @param index index of the button
+     * @param newState the new clickability value
+     */
     private void setButtonClickable(int index, boolean newState) {
         Entity entity = buttons[index];
         DrawableButtonComponent buttonComponent =
@@ -211,28 +272,39 @@ public class GameStateSystem implements IInitSystem, ISubscriber {
         buttonComponent.setClickable(newState);
     }
 
+    /**
+     * Runs every time the player presses a button
+     * @param inputEvent the input event
+     */
     private void controlPlayer(InputController.InputEvent inputEvent) {
         switch (gameState){
             case Tutorial:
+                // Nothing happens
                 break;
             case PlayerOneFleetPlacement:
+                // Place boats
                 processInputForFleetPlacement(inputEvent);
                 break;
             case PlayerOneGuess:
+                // Place guesses
                 processInputForPlayerGuessTurn(inputEvent);
                 break;
             case PlayerOneTurn:
+                // Process attacks
                 processInputForPlayerAttackTurn(inputEvent);
                 break;
             case PlayerTwoFleetPlacement:
+                // Tell the AI to place their boats
                 AI.placeBoats();
                 changeGameState(GameState.PlayerOneGuess);
                 break;
             case PlayerTwoGuess:
+                // Tell the AI to think
                 AI.think();
                 changeGameState(GameState.PlayerOneTurn);
                 break;
             case PlayerTwoTurn:
+                // Tell the AI to select a grid position
                 AI.attack();
                 processAIAttackTurn();
                 changeGameState(GameState.AttackTurnsComplete);
@@ -240,6 +312,7 @@ public class GameStateSystem implements IInitSystem, ISubscriber {
             case Tie:
             case PlayerOneLost:
             case PlayerTwoLost:
+                // Game ended, wait for user to press the arrow button
                 processInputForGameOver(inputEvent);
                 break;
         }

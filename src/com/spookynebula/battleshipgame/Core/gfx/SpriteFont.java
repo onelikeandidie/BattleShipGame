@@ -33,7 +33,13 @@ public class SpriteFont {
     public int getSymbolHeight() { return symbolHeight; }
     public void setSymbolHeight(int newHeight) { symbolHeight = newHeight; }
 
+    /**
+     * Returns the Image of the symbol of the character given
+     * @param symbol 'F' single quote char
+     * @return Only the Image of the symbol
+     */
     public Image getSymbol(char symbol){
+        // Retrieve the Image pixel data
         int[] spriteData = new int[symbolWidth * symbolHeight];
         // Get the symbol
         int index = Symbol.get(symbol);
@@ -48,7 +54,7 @@ public class SpriteFont {
                 y++;
             }
             offsetY = y * symbolHeight;
-            // Flip through each pixel starting with the
+            // Flip through each pixel starting with the first
             int pixelIndex = 0;
             int splitX = 0, splitY = 0;
             while (splitY < symbolHeight) {
@@ -63,7 +69,10 @@ public class SpriteFont {
                 splitY++;
                 splitX = 0;
             }
+            // Create the Image of the Symbol
             Image sprite = new Image(symbolWidth, symbolHeight, spriteData);
+            // Add it to the symbols array to use later
+            // This kinda saves compute time
             symbols[index] = sprite;
             return sprite;
         } else {

@@ -13,6 +13,12 @@ public class BoardCursorSystem extends CursorSystem {
         super(gameContainer);
     }
 
+    /**
+     * Changes the cursor depending on the HoverComponent bellow.
+     * Override of the original method, now works with buttons.
+     * @param cursorX The current cursor X
+     * @param cursorY The current cursor Y
+     */
     @Override
     protected void checkCursorCollisions(float cursorX, float cursorY) {
         boolean hoveringSomething = false;

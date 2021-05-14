@@ -11,15 +11,12 @@ public class Image {
     }
 
     public int getWidth() { return width; }
-
     public void setWidth(int newWidth) { width = newWidth; }
 
     public int getHeight() { return height; }
-
     public void setHeight(int newHeight) { height = newHeight; }
 
     public int[] getPixelData() { return pixelData; }
-
     public void setPixelData(int[] newPixelData) { pixelData = newPixelData; }
 
     public void setPixel(int x, int y, int pixelColourARGB) {

@@ -19,25 +19,26 @@ public class Spritesheet {
     }
 
     public int getWidth() { return width; }
-
     public void setWidth(int newWidth) { width = newWidth; }
 
     public int getHeight() { return height; }
-
     public void setHeight(int newHeight) { height = newHeight; }
 
     public int[] getPixelData() { return pixelData; }
-
     public void setPixelData(int[] newPixelData) { pixelData = newPixelData; }
 
     public int getSpriteWidth() { return spriteWidth; }
-
     public void setSpriteWidth(int newWidth) { spriteWidth = newWidth; }
 
     public int getSpriteHeight() { return spriteHeight; }
-
     public void setSpriteHeight(int newHeight) { spriteHeight = newHeight; }
 
+    /**
+     * Returns Image of the sprite with the X and Y position in the sheet
+     * @param x The X tile position
+     * @param y The Y tile position
+     * @return Only the Image of the sprite
+     */
     public Image getSprite(int x, int y){
         int[] spriteData = new int[spriteWidth * spriteHeight];
         int spriteIndex = x + y * spriteAmountX;

@@ -85,6 +85,9 @@ public class InputController implements ISubscribeSystem, KeyListener, MouseList
         InputEvent.setMouseY((int) (e.getY() / parentGame.getWindowManager().getWindowScale()));
     }
 
+    /**
+     * Describes a more easy to access Input Event
+     */
     public class InputEvent {
         private boolean[] keys;
         private boolean[] mouseKeys;

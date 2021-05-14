@@ -30,6 +30,8 @@ public class CursorSystem implements IInitSystem, IUpdateSystem, ISubscriber {
     }
 
     public void Init() {
+        // Init is needed to create the Drawable Cursor Entity
+        // and hide the actual system cursor
         createCursor();
         parentGame.getWindowManager().cursorHide();
     }
@@ -51,6 +53,11 @@ public class CursorSystem implements IInitSystem, IUpdateSystem, ISubscriber {
         updateCursor();
     }
 
+    /**
+     * Changes the cursor depending on the HoverComponent bellow
+     * @param cursorX The current cursor X
+     * @param cursorY The current cursor Y
+     */
     protected void checkCursorCollisions(float cursorX, float cursorY) {
         boolean hoveringSomething = false;
 
@@ -63,16 +70,18 @@ public class CursorSystem implements IInitSystem, IUpdateSystem, ISubscriber {
             offsetX = 0;
             offsetY = 0;
 
+            // This is in case the whole window has a hover
+            // Hitbox instead. Then it doesn't need a position
+            // Component
             if (positionComponent != null) {
                 offsetX = positionComponent.getX();
                 offsetY = positionComponent.getY();
             }
 
-            if (offsetX < cursorX && cursorX < offsetX + hoverComponent.getHitBoxX()){
-                if (offsetY < cursorY && cursorY < offsetY + hoverComponent.getHitBoxY()){
-                    currentCursor = hoverComponent.getHoverCursor();
-                    hoveringSomething = true;
-                }
+            // Check if the cursor is within bounds
+            if (Util.isInBounds((int) cursorX, (int) cursorY, hoverComponent.getHitBoxX(), hoverComponent.getHitBoxY())) {
+                currentCursor = hoverComponent.getHoverCursor();
+                hoveringSomething = true;
             }
         }
 
@@ -85,11 +94,14 @@ public class CursorSystem implements IInitSystem, IUpdateSystem, ISubscriber {
     public void setDefault(Cursors cursors) { cursorDefault = cursors; }
 
     public void notify(Object data) {
+        // This listens for any Hover Entities added
         if (data instanceof EntityManager.EntityModifiedEvent) {
             EntityManager.EntityModifiedEvent eventData = (EntityManager.EntityModifiedEvent) data;
             String componentType = eventData.getComponent().getType();
             if (componentType == "hover_component") updateFilter();
         }
+        // This listens to see if all Entities were cleared,
+        // if so, it creates a new cursor drawable Entity
         if (data instanceof EntityManager.EntitiesClearedEvent){
             EntityManager.EntitiesClearedEvent eventData = (EntityManager.EntitiesClearedEvent) data;
             createCursor();
@@ -97,6 +109,9 @@ public class CursorSystem implements IInitSystem, IUpdateSystem, ISubscriber {
         }
     }
 
+    /**
+     * Creates a drawable cursor Entity
+     */
     private void createCursor(){
         cursorEntity = new Entity();
         parentGame.getEntityManager().addEntity(cursorEntity);
@@ -115,6 +130,10 @@ public class CursorSystem implements IInitSystem, IUpdateSystem, ISubscriber {
         parentGame.getEntityManager().addComponent(cursorEntity, cursorDrawable);
     }
 
+    /**
+     * Updates the cursor's sprite depending on the Hover
+     * Component's hover cursor
+     */
     public void updateCursor(){
         switch (currentCursor){
             case Arrow:
@@ -146,6 +165,9 @@ public class CursorSystem implements IInitSystem, IUpdateSystem, ISubscriber {
         enabled = true;
     }
 
+    /**
+     * List of possible Cursor types
+     */
     public enum Cursors{
         Arrow, Pointer, Attack
     }

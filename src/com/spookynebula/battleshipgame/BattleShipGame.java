@@ -75,8 +75,7 @@ public class BattleShipGame extends GameContainer {
         ContentLoader.loadImage("/com/spookynebula/battleshipgame/assets/board_cursor.png");
         ContentLoader.loadImage("/com/spookynebula/battleshipgame/assets/test.png");
 
-        // Create the Entities
-
+        // Initialize the game
         initThread();
     }
 }

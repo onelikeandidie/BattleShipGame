@@ -53,6 +53,9 @@ public class BoardRenderSystem extends DefaultRenderSystem implements IInitSyste
         sendFramePixelData();
     }
 
+    /**
+     * Draws Modal Entities
+     */
     private void drawModals() {
         for (int i = 0; i < modalEntityList.size(); i++) {
             IEntity entity = modalEntityList.get(i);
@@ -73,6 +76,15 @@ public class BoardRenderSystem extends DefaultRenderSystem implements IInitSyste
         }
     }
 
+    /**
+     * Draws text from a modal component
+     * @param modalComponent The modal component where the text resides
+     * @param spriteFont A SpriteFont
+     * @param modalOffsetX X Position of the modal
+     * @param modalOffsetY Y Position of the modal
+     * @param textStartX X offset where to draw the text
+     * @param textStartY Y offset where to draw the text
+     */
     private void drawModalText(
             ModalComponent modalComponent,
             SpriteFont spriteFont,
@@ -89,6 +101,9 @@ public class BoardRenderSystem extends DefaultRenderSystem implements IInitSyste
         }
     }
 
+    /**
+     * Draws limited LCD-make-believe Entities
+     */
     private void drawTextDisplayEntities() {
         for (int i = 0; i < textDisplayEntityList.size(); i++) {
             IEntity entity = textDisplayEntityList.get(i);
@@ -106,6 +121,9 @@ public class BoardRenderSystem extends DefaultRenderSystem implements IInitSyste
         }
     }
 
+    /**
+     * Draws drawable button entities
+     */
     private void drawButtons() {
         for (int i = 0; i < drawableButtonEntityList.size(); i++) {
             IEntity entity = drawableButtonEntityList.get(i);
@@ -118,19 +136,24 @@ public class BoardRenderSystem extends DefaultRenderSystem implements IInitSyste
             int offsetY = (int) positionComponent.getY();
 
             int textureID = drawableButtonComponent.getTextureID();
+            // Get the non-clickable texture
             Image buttonTexture = parentGame.getContentLoader().getTexture(textureID,
                     drawableButtonComponent.getStateTileX(1),
                     drawableButtonComponent.getStateTileY(1));
+            // If the button is clickable, get the other texture
             if (drawableButtonComponent.isClickable()) {
                 buttonTexture = parentGame.getContentLoader().getTexture(textureID,
                         drawableButtonComponent.getStateTileX(0),
                         drawableButtonComponent.getStateTileY(0));
             }
-
+            // Finally draw the image
             drawImage(buttonTexture, offsetX, offsetY);
         }
     }
 
+    /**
+     * Draw the boards
+     */
     private void drawBoard() {
         // Debug, to know how many entities were drawn this frame
         int entityCount = 0;
@@ -145,12 +168,17 @@ public class BoardRenderSystem extends DefaultRenderSystem implements IInitSyste
             // Check if it was a hidden grid (for the CPU for example)
             if (!gridComponent.isHidden()){
                 // Draw tiles
-                drawBoardTiles(boardIndex, positionComponent, gridComponent);
+                drawBoardTiles(positionComponent, gridComponent);
             }
         }
     }
 
-    private void drawBoardTiles(int boardIndex, PositionComponent positionComponent, GridComponent gridComponent) {
+    /**
+     * Draw the tiles of the board
+     * @param positionComponent position of the board entity
+     * @param gridComponent grid of the board entity
+     */
+    private void drawBoardTiles(PositionComponent positionComponent, GridComponent gridComponent) {
         for (int tileIndex = 0; tileIndex < gridComponent.getTiles().length; tileIndex++) {
             GridComponent.TileState tileState = gridComponent.get(tileIndex);
             // Check if the tile has any state that is not null (meaning nothing in the tile)
@@ -165,9 +193,12 @@ public class BoardRenderSystem extends DefaultRenderSystem implements IInitSyste
                     y++;
                 }
                 y = (int) (positionComponent.getY() + y * (gridComponent.getTileHeight() + gridComponent.getTilePaddingY()));
+
+                // Don't draw the tile if the state means that it is empty
                 if (tileState != GridComponent.TileState.Null) {
                     drawTile(tileState, x, y);
                 }
+                // Draw the tile currently selected
                 if (tileIndex == gridComponent.getSelectedTileIndex()) {
                     drawSelectedTile(x, y);
                 }
@@ -175,10 +206,21 @@ public class BoardRenderSystem extends DefaultRenderSystem implements IInitSyste
         }
     }
 
+    /**
+     * Draw the selected tile texture
+     * @param x X position
+     * @param y Y position
+     */
     private void drawSelectedTile(int x, int y) {
         drawImage(selectedTileImage, x, y);
     }
 
+    /**
+     * Draw the tile depending on the state
+     * @param tileState TileState, go check the GridComponent.TileState
+     * @param x X position
+     * @param y Y position
+     */
     private void drawTile(GridComponent.TileState tileState, int x, int y){
         Image tileTexture;
         switch (tileState){
@@ -223,6 +265,7 @@ public class BoardRenderSystem extends DefaultRenderSystem implements IInitSyste
         super.notify(data);
 
         if (data instanceof EntityManager.EntityModifiedEvent) {
+            // Check if any components with the following types where added
             EntityManager.EntityModifiedEvent eventData = (EntityManager.EntityModifiedEvent) data;
             String componentType = eventData.getComponent().getType();
             if (componentType == "grid_component" ||
@@ -242,6 +285,9 @@ public class BoardRenderSystem extends DefaultRenderSystem implements IInitSyste
         super.updateFilter();
     }
 
+    /**
+     * Draw board backgrounds. The cute ones.
+     */
     private void drawBackgroundBoard(){
         Image fleetBoardTexture = parentGame.getContentLoader().getTexture(0);
         drawImage(fleetBoardTexture);
